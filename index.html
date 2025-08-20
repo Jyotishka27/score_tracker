@@ -272,30 +272,28 @@
     const newMatchBtn = document.getElementById('newMatchBtn');
     const deleteMatchBtn = document.getElementById('deleteMatchBtn');
 
-    // Load all matches for dropdown
     async function loadMatchesList() {
       try {
         const matchesCol = collection(db, "matches");
         const snapshot = await getDocs(matchesCol);
         matches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        // Clear and fill select dropdown
         matchSelect.innerHTML = "";
         matches.forEach(m => {
           const option = document.createElement('option');
+          const date = m.created ? new Date(m.created).toLocaleString() : null;
           option.value = m.id;
-          option.textContent = m.created ? `Match ${m.created}` : `Match ${m.id}`;
+          option.textContent = date ? `Match - ${date}` : `Match ${m.id}`;
           matchSelect.appendChild(option);
         });
 
         if(matches.length > 0) {
           if(!currentMatchId || !matches.find(m => m.id === currentMatchId)) {
-            currentMatchId = matches[0].id; // default to first match in list
+            currentMatchId = matches[0].id; 
           }
           matchSelect.value = currentMatchId;
           await loadMatch(currentMatchId);
         } else {
-          // No matches exist - create one automatically
           await createNewMatch();
         }
       } catch (e) {
@@ -318,6 +316,11 @@
 
           document.getElementById("team1Input").value = teamNames.team1;
           document.getElementById("team2Input").value = teamNames.team2;
+
+          // Update goal form team select option texts
+          document.querySelector('#teamSelect option[value="team1"]').textContent = teamNames.team1;
+          document.querySelector('#teamSelect option[value="team2"]').textContent = teamNames.team2;
+
           render();
         } else {
           alert("Selected match not found.");
@@ -335,9 +338,8 @@
           scores,
           goalStats,
           teamNames,
-          created: matches.find(m=>m.id === currentMatchId)?.created || new Date().toISOString()
+          created: matches.find(m => m.id === currentMatchId)?.created || new Date().toISOString()
         });
-        console.log("Match data saved for match ID:", currentMatchId);
       } catch (e) {
         console.error("Error saving match data:", e);
         alert("Failed to save match data.");
@@ -352,7 +354,6 @@
           teamNames: { team1: "Team A", team2: "Team B" },
           created: new Date().toISOString()
         });
-        console.log("Created new match with ID:", docRef.id);
         currentMatchId = docRef.id;
         await loadMatchesList();
         matchSelect.value = currentMatchId;
@@ -372,8 +373,6 @@
 
       try {
         await deleteDoc(doc(db, "matches", currentMatchId));
-        console.log("Deleted match:", currentMatchId);
-        // Remove from local list and update UI
         matches = matches.filter(m => m.id !== currentMatchId);
         if(matches.length > 0) {
           currentMatchId = matches[0].id;
@@ -396,9 +395,6 @@
 
       document.getElementById('teamAStatsTitle').textContent = `${teamNames.team1} Goals`;
       document.getElementById('teamBStatsTitle').textContent = `${teamNames.team2} Goals`;
-
-      document.querySelector('#teamSelect option[value="team1"]').textContent = teamNames.team1;
-      document.querySelector('#teamSelect option[value="team2"]').textContent = teamNames.team2;
 
       renderTeamStats('team1', document.getElementById('teamAStats'));
       renderTeamStats('team2', document.getElementById('teamBStats'));
@@ -462,12 +458,16 @@
     }
 
     async function updateTeamName(team) {
-      teamNames[team] = document.getElementById(team + "Input").value || (team === "team1" ? "Team A" : "Team B");
+      teamNames[team] = document.getElementById(team + "Input").value.trim() || (team === "team1" ? "Team A" : "Team B");
       await saveData();
+
+      // Update goal form select option text for team names to keep consistent
+      document.querySelector('#teamSelect option[value="team1"]').textContent = teamNames.team1;
+      document.querySelector('#teamSelect option[value="team2"]').textContent = teamNames.team2;
+
       render();
     }
 
-    // Event listeners for match selector and buttons
     matchSelect.addEventListener('change', async (e) => {
       currentMatchId = e.target.value;
       await loadMatch(currentMatchId);
@@ -481,10 +481,7 @@
       await deleteMatch();
     });
 
-    // Load initial match list on page load
     loadMatchesList();
-
   </script>
 </body>
 </html>
-
