@@ -342,38 +342,63 @@
     render();
   }
 
-  // ✅ Render Matches List
+  // ✅ Render Matches in <select>
   function renderMatchesList() {
-    const listEl = document.getElementById('matchesList');
-    listEl.innerHTML = "";
+    const selectEl = document.getElementById('matchSelect');
+    selectEl.innerHTML = "";
     matches.forEach(match => {
-      const li = document.createElement("li");
-      li.textContent = `${match.teamNames.team1} vs ${match.teamNames.team2}`;
-      li.classList.add("cursor-pointer", "hover:text-blue-500");
-      li.onclick = () => loadMatch(match.id);
-      listEl.appendChild(li);
+      const option = document.createElement("option");
+      option.value = match.id;
+      option.textContent = `${match.teamNames?.team1 || "Team 1"} vs ${match.teamNames?.team2 || "Team 2"}`;
+      if (match.id === currentMatchId) option.selected = true;
+      selectEl.appendChild(option);
     });
   }
 
-  // ✅ Render UI
-  function render() {
-    document.getElementById('team1Name').textContent = teamNames.team1;
-    document.getElementById('team2Name').textContent = teamNames.team2;
-    document.getElementById('team1Score').textContent = scores.team1;
-    document.getElementById('team2Score').textContent = scores.team2;
-
-    const goalList = document.getElementById('goalList');
-    goalList.innerHTML = "";
-    goalStats.forEach((g, i) => {
-      const li = document.createElement("li");
-      li.textContent = `${g.team === "team1" ? teamNames.team1 : teamNames.team2} - ${g.scorer}${g.assist ? " (Assist: " + g.assist + ")" : ""}`;
-      goalList.appendChild(li);
-    });
+  // ✅ Delete a goal
+  async function deleteGoal(index) {
+    const goal = goalStats[index];
+    if (goal) {
+      scores[goal.team] = Math.max(0, scores[goal.team] - 1); // prevent negative scores
+      goalStats.splice(index, 1);
+      await saveData();
+      render();
+    }
   }
+
+// ✅ Render UI
+function render() {
+  document.getElementById('team1Name').textContent = teamNames.team1;
+  document.getElementById('team2Name').textContent = teamNames.team2;
+  document.getElementById('team1Score').textContent = scores.team1;
+  document.getElementById('team2Score').textContent = scores.team2;
+  document.getElementById('teamAStatsTitle').textContent = `${teamNames.team1} Goals`;
+  document.getElementById('teamBStatsTitle').textContent = `${teamNames.team2} Goals`;
+
+  const teamAList = document.getElementById('teamAStats');
+  const teamBList = document.getElementById('teamBStats');
+  teamAList.innerHTML = "";
+  teamBList.innerHTML = "";
+
+  goalStats.forEach((g, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>${g.scorer}${g.assist ? " (Assist: " + g.assist + ")" : ""}</span>
+      <button class="delete-btn" onclick="deleteGoal(${i})">❌</button>
+    `;
+
+    if (g.team === "team1") {
+      teamAList.appendChild(li);
+    } else {
+      teamBList.appendChild(li);
+    }
+  });
+}
 
   // ✅ Event Listeners
   document.getElementById('goalForm').addEventListener('submit', addGoal);
-  document.getElementById('createMatchBtn').addEventListener('click', createMatch);
+  document.getElementById('newMatchBtn').addEventListener('click', createMatch); // fixed id
+  document.getElementById('matchSelect').addEventListener('change', e => loadMatch(e.target.value));
 
   // ✅ Init
   loadMatches();
