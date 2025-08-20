@@ -242,246 +242,142 @@
     </form>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+<script type="module">
+  // ✅ Firebase SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB0DaaYB1hZLY8h23QOpT7Ok4sX5ACkHTM",
-      authDomain: "we-are-eleven.firebaseapp.com",
-      projectId: "we-are-eleven",
-      storageBucket: "we-are-eleven.firebasestorage.app",
-      messagingSenderId: "446706356039",
-      appId: "1:446706356039:web:db1bd26c20a2571b824662",
-      measurementId: "G-M3DSVHMNEV"
-    };
+  // ✅ Firebase config
+  const firebaseConfig = {
+    apiKey: "YOUR_KEY",
+    authDomain: "YOUR_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    let scores = { team1: 0, team2: 0 };
-    let goalStats = [];
-    let teamNames = { team1: "Team A", team2: "Team B" };
-    let currentMatchId = null;
-    let matches = [];
+  // ✅ Global state
+  let scores = { team1: 0, team2: 0 };
+  let goalStats = [];
+  let teamNames = { team1: "Team 1", team2: "Team 2" };
+  let matches = [];
+  let currentMatchId = null;
 
-    const matchSelect = document.getElementById('matchSelect');
-    const newMatchBtn = document.getElementById('newMatchBtn');
-    const deleteMatchBtn = document.getElementById('deleteMatchBtn');
-
-    async function loadMatchesList() {
-      try {
-        const matchesCol = collection(db, "matches");
-        const snapshot = await getDocs(matchesCol);
-        matches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        matchSelect.innerHTML = "";
-        matches.forEach(m => {
-          const option = document.createElement('option');
-          const date = m.created ? new Date(m.created).toLocaleString() : null;
-          option.value = m.id;
-          option.textContent = date ? `Match - ${date}` : `Match ${m.id}`;
-          matchSelect.appendChild(option);
-        });
-
-        if(matches.length > 0) {
-          if(!currentMatchId || !matches.find(m => m.id === currentMatchId)) {
-            currentMatchId = matches[0].id; 
-          }
-          matchSelect.value = currentMatchId;
-          await loadMatch(currentMatchId);
-        } else {
-          await createNewMatch();
-        }
-      } catch (e) {
-        console.error("Error loading matches list:", e);
-        alert("Failed to load matches list.");
-      }
-    }
-
-    async function loadMatch(matchId) {
-      try {
-        const docRef = doc(db, "matches", matchId);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          scores = data.scores || { team1: 0, team2: 0 };
-          goalStats = data.goalStats || [];
-          teamNames = data.teamNames || { team1: "Team A", team2: "Team B" };
-          currentMatchId = matchId;
-
-          document.getElementById("team1Input").value = teamNames.team1;
-          document.getElementById("team2Input").value = teamNames.team2;
-
-          // Update goal form team select option texts
-          document.querySelector('#teamSelect option[value="team1"]').textContent = teamNames.team1;
-          document.querySelector('#teamSelect option[value="team2"]').textContent = teamNames.team2;
-
-          render();
-        } else {
-          alert("Selected match not found.");
-        }
-      } catch (e) {
-        console.error("Error loading match:", e);
-        alert("Failed to load match data.");
-      }
-    }
-
-    async function saveData() {
-      if (!currentMatchId) return;
-      try {
-        await setDoc(doc(db, "matches", currentMatchId), {
-          scores,
-          goalStats,
-          teamNames,
-          created: matches.find(m => m.id === currentMatchId)?.created || new Date().toISOString()
-        });
-      } catch (e) {
-        console.error("Error saving match data:", e);
-        alert("Failed to save match data.");
-      }
-    }
-
-    async function createNewMatch() {
-      try {
-        const docRef = await addDoc(collection(db, "matches"), {
-          scores: { team1: 0, team2: 0 },
-          goalStats: [],
-          teamNames: { team1: "Team A", team2: "Team B" },
-          created: new Date().toISOString()
-        });
-        currentMatchId = docRef.id;
-        await loadMatchesList();
-        matchSelect.value = currentMatchId;
-        await loadMatch(currentMatchId);
-      } catch (e) {
-        console.error("Error creating new match:", e);
-        alert("Failed to create new match.");
-      }
-    }
-
-    async function deleteMatch() {
-      if (!currentMatchId) {
-        alert("Select a match first.");
-        return;
-      }
-      if(!confirm("Are you sure you want to delete this match?")) return;
-
-      try {
-        await deleteDoc(doc(db, "matches", currentMatchId));
-        matches = matches.filter(m => m.id !== currentMatchId);
-        if(matches.length > 0) {
-          currentMatchId = matches[0].id;
-        } else {
-          currentMatchId = null;
-        }
-        await loadMatchesList();
-      } catch (e) {
-        console.error("Error deleting match:", e);
-        alert("Failed to delete match.");
-      }
-    }
-
-    function render() {
-      document.getElementById('team1Score').textContent = scores.team1;
-      document.getElementById('team2Score').textContent = scores.team2;
-
-      document.getElementById('team1Name').textContent = teamNames.team1;
-      document.getElementById('team2Name').textContent = teamNames.team2;
-
-      document.getElementById('teamAStatsTitle').textContent = `${teamNames.team1} Goals`;
-      document.getElementById('teamBStatsTitle').textContent = `${teamNames.team2} Goals`;
-
-      renderTeamStats('team1', document.getElementById('teamAStats'));
-      renderTeamStats('team2', document.getElementById('teamBStats'));
-    }
-
-    function renderTeamStats(team, container) {
-      container.innerHTML = '';
-      goalStats.forEach((entry, index) => {
-        if (entry.team === team) {
-          const li = document.createElement('li');
-          li.textContent = `${entry.scorer}${entry.assist ? " (Assist: " + entry.assist + ")" : ""}`;
-          const delBtn = document.createElement('button');
-          delBtn.className = 'delete-btn';
-          delBtn.textContent = 'Delete';
-          delBtn.onclick = () => deleteGoal(index);
-          li.appendChild(delBtn);
-          container.appendChild(li);
-        }
+  // ✅ Save data to Firestore
+  async function saveData() {
+    if (!currentMatchId) return;
+    try {
+      console.log("Saving to Firestore:", { scores, goalStats, teamNames }); // debug log
+      await setDoc(doc(db, "matches", currentMatchId), {
+        scores: { ...scores },            // ensure plain object
+        goalStats: [...goalStats],        // ensure array is copied properly
+        teamNames: { ...teamNames },
+        created: matches.find(m => m.id === currentMatchId)?.created || new Date().toISOString()
       });
+    } catch (e) {
+      console.error("Error saving match data:", e);
+      alert("Failed to save match data.");
     }
+  }
 
-    async function incrementScore(team) {
-      scores[team]++;
-      await saveData();
-      render();
-    }
-
-    async function addGoal(event) {
-      event.preventDefault();
-      const team = document.getElementById('teamSelect').value;
-      const scorer = document.getElementById('scorerInput').value.trim();
-      const assist = document.getElementById('assistInput').value.trim();
-
-      if (!team || !scorer) {
-        alert("Please fill scorer and team.");
-        return;
-      }
-
-      scores[team]++;
-      goalStats.push({ team, scorer, assist });
-      await saveData();
-      render();
-      event.target.reset();
-    }
-
-    async function deleteGoal(index) {
-      if (!confirm("Delete this goal?")) return;
-      const goal = goalStats[index];
-      scores[goal.team] = Math.max(0, scores[goal.team] - 1);
-      goalStats.splice(index, 1);
-      await saveData();
-      render();
-    }
-
-    async function resetMatch() {
-      if (!confirm("Reset entire match?")) return;
-      scores = { team1: 0, team2: 0 };
-      goalStats = [];
-      await saveData();
-      render();
-    }
-
-    async function updateTeamName(team) {
-      teamNames[team] = document.getElementById(team + "Input").value.trim() || (team === "team1" ? "Team A" : "Team B");
-      await saveData();
-
-      // Update goal form select option text for team names to keep consistent
-      document.querySelector('#teamSelect option[value="team1"]').textContent = teamNames.team1;
-      document.querySelector('#teamSelect option[value="team2"]').textContent = teamNames.team2;
-
-      render();
-    }
-
-    matchSelect.addEventListener('change', async (e) => {
-      currentMatchId = e.target.value;
-      await loadMatch(currentMatchId);
+  // ✅ Load matches
+  async function loadMatches() {
+    const querySnapshot = await getDocs(collection(db, "matches"));
+    matches = [];
+    querySnapshot.forEach(docSnap => {
+      matches.push({ id: docSnap.id, ...docSnap.data() });
     });
+    renderMatchesList();
+  }
 
-    newMatchBtn.addEventListener('click', async () => {
-      await createNewMatch();
+  // ✅ Load a single match
+  async function loadMatch(matchId) {
+    const docRef = doc(db, "matches", matchId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      scores = data.scores || { team1: 0, team2: 0 };
+      goalStats = data.goalStats || [];
+      teamNames = data.teamNames || { team1: "Team 1", team2: "Team 2" };
+      currentMatchId = matchId;
+      render();
+    }
+  }
+
+  // ✅ Add Goal (fixed)
+  async function addGoal(event) {
+    event.preventDefault();
+    const team = document.getElementById('teamSelect').value;
+    const scorer = document.getElementById('scorerInput').value.trim();
+    const assist = document.getElementById('assistInput').value.trim();
+
+    if (!team || !scorer) {
+      alert("Please fill scorer and team.");
+      return;
+    }
+
+    scores[team]++;
+    const goalEntry = { team, scorer };
+    if (assist) goalEntry.assist = assist;  // only add assist if provided
+    goalStats.push(goalEntry);
+
+    await saveData();
+    render();
+    event.target.reset();
+  }
+
+  // ✅ Create Match
+  async function createMatch() {
+    const matchId = `match_${Date.now()}`;
+    currentMatchId = matchId;
+    scores = { team1: 0, team2: 0 };
+    goalStats = [];
+    teamNames = { team1: "Team 1", team2: "Team 2" };
+    await saveData();
+    await loadMatches();
+    render();
+  }
+
+  // ✅ Render Matches List
+  function renderMatchesList() {
+    const listEl = document.getElementById('matchesList');
+    listEl.innerHTML = "";
+    matches.forEach(match => {
+      const li = document.createElement("li");
+      li.textContent = `${match.teamNames.team1} vs ${match.teamNames.team2}`;
+      li.classList.add("cursor-pointer", "hover:text-blue-500");
+      li.onclick = () => loadMatch(match.id);
+      listEl.appendChild(li);
     });
+  }
 
-    deleteMatchBtn.addEventListener('click', async () => {
-      await deleteMatch();
+  // ✅ Render UI
+  function render() {
+    document.getElementById('team1Name').textContent = teamNames.team1;
+    document.getElementById('team2Name').textContent = teamNames.team2;
+    document.getElementById('team1Score').textContent = scores.team1;
+    document.getElementById('team2Score').textContent = scores.team2;
+
+    const goalList = document.getElementById('goalList');
+    goalList.innerHTML = "";
+    goalStats.forEach((g, i) => {
+      const li = document.createElement("li");
+      li.textContent = `${g.team === "team1" ? teamNames.team1 : teamNames.team2} - ${g.scorer}${g.assist ? " (Assist: " + g.assist + ")" : ""}`;
+      goalList.appendChild(li);
     });
+  }
 
-    loadMatchesList();
-  </script>
+  // ✅ Event Listeners
+  document.getElementById('goalForm').addEventListener('submit', addGoal);
+  document.getElementById('createMatchBtn').addEventListener('click', createMatch);
+
+  // ✅ Init
+  loadMatches();
+</script>
+
 </body>
 </html>
