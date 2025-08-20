@@ -1,1 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tournament Scoreboard with Multi-Match Storage</title>
+  <style>
+    /* Your existing styles unchanged */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .scoreboard {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      padding-bottom: 20px;
+    }
+    .header {
+      padding: 20px;
+      text-align: center;
+      background: #0052cc;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .match-info {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 20px;
+      font-size: 1.25rem;
+      border-bottom: 1px solid #eee;
+    }
+    .team {
+      flex: 1;
+      text-align: center;
+      font-weight: 600;
+    }
+    .score {
+      font-size: 2.5rem;
+      font-weight: 700;
+      flex: 0.5;
+      text-align: center;
+      color: #0052cc;
+    }
+    .score-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 15px 0;
+    }
+    button {
+      background: #0052cc;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background: #003d99;
+    }
+    .delete-btn {
+      background: #cc0000;
+      padding: 4px 8px;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .delete-btn:hover { background: #990000; }
+    .reset-btn { background: #777; }
+    .reset-btn:hover { background: #555; }
+    .stats-container {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 20px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .stats-section {
+      flex: 1 1 45%;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 15px;
+      background: #fafafa;
+    }
+    .team-stats-column h4 {
+      margin: 0 0 8px;
+      color: #0052cc;
+      text-align: center;
+      font-weight: 600;
+      border-bottom: 1px solid #0052cc;
+      padding-bottom: 4px;
+    }
+    .stats-list {
+      list-style: none;
+      padding: 0 8px;
+      margin: 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+    }
+    .stats-list li {
+      padding: 6px 10px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stats-list li:last-child { border-bottom: none; }
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      padding: 0 20px;
+      margin-top: 20px;
+    }
+    label {
+      flex: 1 1 100%;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    select, input[type="text"] {
+      flex: 1 1 48%;
+      padding: 8px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .team-name-edit {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 20px;
+      gap: 10px;
+      border-bottom: 1px solid #eee;
+      background: #f9f9f9;
+    }
+    .team-name-edit input {
+      flex: 1;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .match-select-container {
+      padding: 10px 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: #e9f0ff;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+    .match-select-container select {
+      flex-grow: 1;
+      padding: 6px;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .match-select-container button {
+      background: #0073e6;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .match-select-container button:hover {
+      background: #005bb5;
+    }
+    @media (max-width: 960px) {
+      .stats-container { flex-direction: column; }
+      .stats-section { flex: 1 1 100%; }
+      form { flex-direction: column; }
+      select, input[type="text"], button { flex: 1 1 100%; }
+      .team-name-edit { flex-direction: column; }
+      .match-select-container { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+  <div class="scoreboard">
+    <div class="header">Tournament Match Scoreboard</div>
+
+    <!-- Match Selector -->
+    <div class="match-select-container">
+      <select id="matchSelect" aria-label="Select Match"></select>
+      <button id="newMatchBtn">New Match</button>
+      <button id="deleteMatchBtn">Delete Match</button>
+    </div>
+
+    <!-- Editable Team Names -->
+    <div class="team-name-edit">
+      <input type="text" id="team1Input" placeholder="Team A Name" oninput="updateTeamName('team1')" />
+      <input type="text" id="team2Input" placeholder="Team B Name" oninput="updateTeamName('team2')" />
+    </div>
+
+    <div class="match-info">
+      <div class="team" id="team1Name">Team A</div>
+      <div class="score" id="team1Score">0</div>
+      <div class="score" id="team2Score">0</div>
+      <div class="team" id="team2Name">Team B</div>
+    </div>
+
+    <div class="score-buttons">
+      <button onclick="incrementScore('team1')">+ Goal Team A</button>
+      <button onclick="incrementScore('team2')">+ Goal Team B</button>
+      <button class="reset-btn" onclick="resetMatch()">Reset Match</button>
+    </div>
+
+    <div class="stats-container">
+      <div class="stats-section">
+        <h4 id="teamAStatsTitle">Team A Goals</h4>
+        <ul class="stats-list" id="teamAStats"></ul>
+      </div>
+      <div class="stats-section">
+        <h4 id="teamBStatsTitle">Team B Goals</h4>
+        <ul class="stats-list" id="teamBStats"></ul>
+      </div>
+    </div>
+
+    <form id="goalForm" onsubmit="addGoal(event)">
+      <label>Add Goal</label>
+      <select id="teamSelect" required>
+        <option value="">Select Team</option>
+        <option value="team1">Team A</option>
+        <option value="team2">Team B</option>
+      </select>
+      <input type="text" id="scorerInput" placeholder="Goal Scorer" required />
+      <input type="text" id="assistInput" placeholder="Assist (optional)" />
+      <button type="submit">Add Goal</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0DaaYB1hZLY8h23QOpT7Ok4sX5ACkHTM",
+      authDomain: "we-are-eleven.firebaseapp.com",
+      projectId: "we-are-eleven",
+      storageBucket: "we-are-eleven.firebasestorage.app",
+      messagingSenderId: "446706356039",
+      appId: "1:446706356039:web:db1bd26c20a2571b824662",
+      measurementId: "G-M3DSVHMNEV"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    let scores = { team1: 0, team2: 0 };
+    let goalStats = [];
+    let teamNames = { team1: "Team A", team2: "Team B" };
+    let currentMatchId = null;
+    let matches = [];
+
+    const matchSelect = document.getElementById('matchSelect');
+    const newMatchBtn = document.getElementById('newMatchBtn');
+    const deleteMatchBtn = document.getElementById('deleteMatchBtn');
+
+    // Load all matches for dropdown
+    async function loadMatchesList() {
+      try {
+        const matchesCol = collection(db, "matches");
+        const snapshot = await getDocs(matchesCol);
+        matches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // Clear and fill select dropdown
+        matchSelect.innerHTML = "";
+        matches.forEach(m => {
+          const option = document.createElement('option');
+          option.value = m.id;
+          option.textContent = m.created ? `Match ${m.created}` : `Match ${m.id}`;
+          matchSelect.appendChild(option);
+        });
+
+        if(matches.length > 0) {
+          if(!currentMatchId || !matches.find(m => m.id === currentMatchId)) {
+            currentMatchId = matches[0].id; // default to first match in list
+          }
+          matchSelect.value = currentMatchId;
+          await loadMatch(currentMatchId);
+        } else {
+          // No matches exist - create one automatically
+          await createNewMatch();
+        }
+      } catch (e) {
+        console.error("Error loading matches list:", e);
+        alert("Failed to load matches list.");
+      }
+    }
+
+    async function loadMatch(matchId) {
+      try {
+        const docRef = doc(db, "matches", matchId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          scores = data.scores || { team1: 0, team2: 0 };
+          goalStats = data.goalStats || [];
+          teamNames = data.teamNames || { team1: "Team A", team2: "Team B" };
+          currentMatchId = matchId;
+
+          document.getElementById("team1Input").value = teamNames.team1;
+          document.getElementById("team2Input").value = teamNames.team2;
+          render();
+        } else {
+          alert("Selected match not found.");
+        }
+      } catch (e) {
+        console.error("Error loading match:", e);
+        alert("Failed to load match data.");
+      }
+    }
+
+    async function saveData() {
+      if (!currentMatchId) return;
+      try {
+        await setDoc(doc(db, "matches", currentMatchId), {
+          scores,
+          goalStats,
+          teamNames,
+          created: matches.find(m=>m.id === currentMatchId)?.created || new Date().toISOString()
+        });
+        console.log("Match data saved for match ID:", currentMatchId);
+      } catch (e) {
+        console.error("Error saving match data:", e);
+        alert("Failed to save match data.");
+      }
+    }
+
+    async function createNewMatch() {
+      try {
+        const docRef = await addDoc(collection(db, "matches"), {
+          scores: { team1: 0, team2: 0 },
+          goalStats: [],
+          teamNames: { team1: "Team A", team2: "Team B" },
+          created: new Date().toISOString()
+        });
+        console.log("Created new match with ID:", docRef.id);
+        currentMatchId = docRef.id;
+        await loadMatchesList();
+        matchSelect.value = currentMatchId;
+        await loadMatch(currentMatchId);
+      } catch (e) {
+        console.error("Error creating new match:", e);
+        alert("Failed to create new match.");
+      }
+    }
+
+    async function deleteMatch() {
+      if (!currentMatchId) {
+        alert("Select a match first.");
+        return;
+      }
+      if(!confirm("Are you sure you want to delete this match?")) return;
+
+      try {
+        await deleteDoc(doc(db, "matches", currentMatchId));
+        console.log("Deleted match:", currentMatchId);
+        // Remove from local list and update UI
+        matches = matches.filter(m => m.id !== currentMatchId);
+        if(matches.length > 0) {
+          currentMatchId = matches[0].id;
+        } else {
+          currentMatchId = null;
+        }
+        await loadMatchesList();
+      } catch (e) {
+        console.error("Error deleting match:", e);
+        alert("Failed to delete match.");
+      }
+    }
+
+    function render() {
+      document.getElementById('team1Score').textContent = scores.team1;
+      document.getElementById('team2Score').textContent = scores.team2;
+
+      document.getElementById('team1Name').textContent = teamNames.team1;
+      document.getElementById('team2Name').textContent = teamNames.team2;
+
+      document.getElementById('teamAStatsTitle').textContent = `${teamNames.team1} Goals`;
+      document.getElementById('teamBStatsTitle').textContent = `${teamNames.team2} Goals`;
+
+      document.querySelector('#teamSelect option[value="team1"]').textContent = teamNames.team1;
+      document.querySelector('#teamSelect option[value="team2"]').textContent = teamNames.team2;
+
+      renderTeamStats('team1', document.getElementById('teamAStats'));
+      renderTeamStats('team2', document.getElementById('teamBStats'));
+    }
+
+    function renderTeamStats(team, container) {
+      container.innerHTML = '';
+      goalStats.forEach((entry, index) => {
+        if (entry.team === team) {
+          const li = document.createElement('li');
+          li.textContent = `${entry.scorer}${entry.assist ? " (Assist: " + entry.assist + ")" : ""}`;
+          const delBtn = document.createElement('button');
+          delBtn.className = 'delete-btn';
+          delBtn.textContent = 'Delete';
+          delBtn.onclick = () => deleteGoal(index);
+          li.appendChild(delBtn);
+          container.appendChild(li);
+        }
+      });
+    }
+
+    async function incrementScore(team) {
+      scores[team]++;
+      await saveData();
+      render();
+    }
+
+    async function addGoal(event) {
+      event.preventDefault();
+      const team = document.getElementById('teamSelect').value;
+      const scorer = document.getElementById('scorerInput').value.trim();
+      const assist = document.getElementById('assistInput').value.trim();
+
+      if (!team || !scorer) {
+        alert("Please fill scorer and team.");
+        return;
+      }
+
+      scores[team]++;
+      goalStats.push({ team, scorer, assist });
+      await saveData();
+      render();
+      event.target.reset();
+    }
+
+    async function deleteGoal(index) {
+      if (!confirm("Delete this goal?")) return;
+      const goal = goalStats[index];
+      scores[goal.team] = Math.max(0, scores[goal.team] - 1);
+      goalStats.splice(index, 1);
+      await saveData();
+      render();
+    }
+
+    async function resetMatch() {
+      if (!confirm("Reset entire match?")) return;
+      scores = { team1: 0, team2: 0 };
+      goalStats = [];
+      await saveData();
+      render();
+    }
+
+    async function updateTeamName(team) {
+      teamNames[team] = document.getElementById(team + "Input").value || (team === "team1" ? "Team A" : "Team B");
+      await saveData();
+      render();
+    }
+
+    // Event listeners for match selector and buttons
+    matchSelect.addEventListener('change', async (e) => {
+      currentMatchId = e.target.value;
+      await loadMatch(currentMatchId);
+    });
+
+    newMatchBtn.addEventListener('click', async () => {
+      await createNewMatch();
+    });
+
+    deleteMatchBtn.addEventListener('click', async () => {
+      await deleteMatch();
+    });
+
+    // Load initial match list on page load
+    loadMatchesList();
+
+  </script>
+</body>
+</html>
 
