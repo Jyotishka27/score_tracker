@@ -2,407 +2,353 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tournament Scoreboard with Multi-Match Storage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Tournament Scoreboard</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Your existing styles unchanged */
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    .scoreboard {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      overflow: hidden;
-      padding-bottom: 20px;
-    }
-    .header {
-      padding: 20px;
-      text-align: center;
-      background: #0052cc;
-      color: white;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    .match-info {
-      display: flex;
-      justify-content: space-between;
-      padding: 15px 20px;
-      font-size: 1.25rem;
-      border-bottom: 1px solid #eee;
-    }
-    .team {
-      flex: 1;
-      text-align: center;
-      font-weight: 600;
-    }
-    .score {
-      font-size: 2.5rem;
-      font-weight: 700;
-      flex: 0.5;
-      text-align: center;
-      color: #0052cc;
-    }
-    .score-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin: 15px 0;
-    }
-    button {
-      background: #0052cc;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 4px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background: #003d99;
-    }
-    .delete-btn {
-      background: #cc0000;
-      padding: 4px 8px;
-      font-size: 0.9rem;
-      border-radius: 4px;
-      margin-left: 10px;
-      cursor: pointer;
-    }
-    .delete-btn:hover { background: #990000; }
-    .reset-btn { background: #777; }
-    .reset-btn:hover { background: #555; }
-    .stats-container {
-      display: flex;
-      justify-content: space-between;
-      padding: 15px 20px;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .stats-section {
-      flex: 1 1 45%;
-      border: 1px solid #eee;
-      border-radius: 6px;
-      padding: 15px;
-      background: #fafafa;
-    }
-    .team-stats-column h4 {
-      margin: 0 0 8px;
-      color: #0052cc;
-      text-align: center;
-      font-weight: 600;
-      border-bottom: 1px solid #0052cc;
-      padding-bottom: 4px;
-    }
-    .stats-list {
-      list-style: none;
-      padding: 0 8px;
-      margin: 0;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background: white;
-    }
-    .stats-list li {
-      padding: 6px 10px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .stats-list li:last-child { border-bottom: none; }
-    form {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: space-between;
-      padding: 0 20px;
-      margin-top: 20px;
-    }
-    label {
-      flex: 1 1 100%;
-      font-weight: 600;
-      margin-top: 10px;
-    }
-    select, input[type="text"] {
-      flex: 1 1 48%;
-      padding: 8px;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .team-name-edit {
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 20px;
-      gap: 10px;
-      border-bottom: 1px solid #eee;
-      background: #f9f9f9;
-    }
-    .team-name-edit input {
-      flex: 1;
-      padding: 6px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-    }
-    .match-select-container {
-      padding: 10px 20px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      background: #e9f0ff;
-      margin-bottom: 10px;
-      border-radius: 6px;
-    }
-    .match-select-container select {
-      flex-grow: 1;
-      padding: 6px;
-      font-size: 1rem;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    .match-select-container button {
-      background: #0073e6;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    .match-select-container button:hover {
-      background: #005bb5;
-    }
-    @media (max-width: 960px) {
-      .stats-container { flex-direction: column; }
-      .stats-section { flex: 1 1 100%; }
-      form { flex-direction: column; }
-      select, input[type="text"], button { flex: 1 1 100%; }
-      .team-name-edit { flex-direction: column; }
-      .match-select-container { flex-direction: column; align-items: stretch; }
-    }
+    html, body { background: #0b1220; }
+    .glass { backdrop-filter: blur(8px); background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06)); }
   </style>
 </head>
-<body>
-  <div class="scoreboard">
-    <div class="header">Tournament Match Scoreboard</div>
-
-    <!-- Match Selector -->
-    <div class="match-select-container">
-      <select id="matchSelect" aria-label="Select Match"></select>
-      <button id="newMatchBtn">New Match</button>
-      <button id="deleteMatchBtn">Delete Match</button>
+<body class="min-h-screen text-slate-100">
+  <header class="max-w-6xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between">
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">⚽ Live Tournament Scoreboard</h1>
+      <div class="text-xs md:text-sm opacity-75">Realtime via Firebase</div>
     </div>
+  </header>
 
-    <!-- Editable Team Names -->
-    <div class="team-name-edit">
-      <input type="text" id="team1Input" placeholder="Team A Name" oninput="updateTeamName('team1')" />
-      <input type="text" id="team2Input" placeholder="Team B Name" oninput="updateTeamName('team2')" />
-    </div>
-
-    <div class="match-info">
-      <div class="team" id="team1Name">Team A</div>
-      <div class="score" id="team1Score">0</div>
-      <div class="score" id="team2Score">0</div>
-      <div class="team" id="team2Name">Team B</div>
-    </div>
-
-    <div class="score-buttons">
-      <button onclick="incrementScore('team1')">+ Goal Team A</button>
-      <button onclick="incrementScore('team2')">+ Goal Team B</button>
-      <button class="reset-btn" onclick="resetMatch()">Reset Match</button>
-    </div>
-
-    <div class="stats-container">
-      <div class="stats-section">
-        <h4 id="teamAStatsTitle">Team A Goals</h4>
-        <ul class="stats-list" id="teamAStats"></ul>
+  <main class="max-w-6xl mx-auto px-4 pb-24">
+    <!-- Card: Match controls -->
+    <section class="glass rounded-2xl shadow-xl border border-white/10 p-4 md:p-6">
+      <div class="flex flex-col md:flex-row gap-3 md:items-center">
+        <div class="flex-1">
+          <label for="matchSelect" class="block text-sm font-semibold mb-1">Current match</label>
+          <select id="matchSelect" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"></select>
+        </div>
+        <div class="flex gap-2">
+          <button id="newMatchBtn" class="rounded-xl px-4 py-2 bg-indigo-500 hover:bg-indigo-400 font-semibold">New Match</button>
+          <button id="deleteMatchBtn" class="rounded-xl px-4 py-2 bg-rose-600 hover:bg-rose-500 font-semibold">Delete</button>
+        </div>
       </div>
-      <div class="stats-section">
-        <h4 id="teamBStatsTitle">Team B Goals</h4>
-        <ul class="stats-list" id="teamBStats"></ul>
+    </section>
+
+    <!-- Card: Teams + Score -->
+    <section class="grid md:grid-cols-3 gap-6 mt-6">
+      <!-- Team A -->
+      <div class="glass rounded-2xl p-5 border border-white/10">
+        <div class="text-center">
+          <label class="text-xs uppercase tracking-wide opacity-70">Team A</label>
+          <input id="team1Input" class="mt-1 w-full text-center text-xl md:text-2xl font-bold bg-transparent border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Team A" />
+        </div>
+        <div class="mt-5 flex items-center justify-center gap-3">
+          <button data-team="team1" data-delta="-1" class="score-btn rounded-xl px-4 py-2 bg-slate-800 hover:bg-slate-700">−</button>
+          <div class="text-5xl font-black tabular-nums" id="team1Score">0</div>
+          <button data-team="team1" data-delta="1" class="score-btn rounded-xl px-4 py-2 bg-slate-800 hover:bg-slate-700">＋</button>
+        </div>
       </div>
-    </div>
 
-    <form id="goalForm" onsubmit="addGoal(event)">
-      <label>Add Goal</label>
-      <select id="teamSelect" required>
-        <option value="">Select Team</option>
-        <option value="team1">Team A</option>
-        <option value="team2">Team B</option>
-      </select>
-      <input type="text" id="scorerInput" placeholder="Goal Scorer" required />
-      <input type="text" id="assistInput" placeholder="Assist (optional)" />
-      <button type="submit">Add Goal</button>
-    </form>
-  </div>
+      <!-- VS -->
+      <div class="glass rounded-2xl p-5 border border-white/10 flex flex-col items-center justify-center text-center">
+        <div class="text-4xl font-black">VS</div>
+        <div class="mt-2 text-xs opacity-70">Match clock (optional)</div>
+        <div class="mt-2">
+          <button id="resetBtn" class="rounded-xl px-4 py-2 bg-slate-800 hover:bg-slate-700">Reset Scores</button>
+        </div>
+      </div>
 
-<script type="module">
-  // ✅ Firebase SDKs
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      <!-- Team B -->
+      <div class="glass rounded-2xl p-5 border border-white/10">
+        <div class="text-center">
+          <label class="text-xs uppercase tracking-wide opacity-70">Team B</label>
+          <input id="team2Input" class="mt-1 w-full text-center text-xl md:text-2xl font-bold bg-transparent border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Team B" />
+        </div>
+        <div class="mt-5 flex items-center justify-center gap-3">
+          <button data-team="team2" data-delta="-1" class="score-btn rounded-xl px-4 py-2 bg-slate-800 hover:bg-slate-700">−</button>
+          <div class="text-5xl font-black tabular-nums" id="team2Score">0</div>
+          <button data-team="team2" data-delta="1" class="score-btn rounded-xl px-4 py-2 bg-slate-800 hover:bg-slate-700">＋</button>
+        </div>
+      </div>
+    </section>
 
-  // ✅ Firebase config
-  const firebaseConfig = {
-    apiKey: "YOUR_KEY",
-    authDomain: "YOUR_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
+    <!-- Card: Add goal -->
+    <section class="glass rounded-2xl p-5 border border-white/10 mt-6">
+      <h2 class="text-lg font-semibold">Add a Goal</h2>
+      <form id="goalForm" class="grid md:grid-cols-4 gap-3 mt-3">
+        <select id="teamSelect" required class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2">
+          <option value="">Select Team</option>
+          <option value="team1">Team A</option>
+          <option value="team2">Team B</option>
+        </select>
+        <input id="scorerInput" required placeholder="Scorer" class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2" />
+        <input id="assistInput" placeholder="Assist (optional)" class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2" />
+        <button class="rounded-xl px-4 py-2 bg-emerald-600 hover:bg-emerald-500 font-semibold">Add Goal</button>
+      </form>
+    </section>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    <!-- Card: Goal lists -->
+    <section class="grid md:grid-cols-2 gap-6 mt-6">
+      <div class="glass rounded-2xl p-5 border border-white/10">
+        <h3 id="teamAStatsTitle" class="font-semibold text-indigo-300">Team A Goals</h3>
+        <ul id="teamAStats" class="divide-y divide-white/10 mt-3"></ul>
+      </div>
+      <div class="glass rounded-2xl p-5 border border-white/10">
+        <h3 id="teamBStatsTitle" class="font-semibold text-indigo-300">Team B Goals</h3>
+        <ul id="teamBStats" class="divide-y divide-white/10 mt-3"></ul>
+      </div>
+    </section>
+  </main>
 
-  // ✅ Global state
-  let scores = { team1: 0, team2: 0 };
-  let goalStats = [];
-  let teamNames = { team1: "Team 1", team2: "Team 2" };
-  let matches = [];
-  let currentMatchId = null;
+  <!-- Firebase + App -->
+  <script type="module">
+    // ===================== Firebase SDKs =====================
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, doc, setDoc, updateDoc, getDoc, addDoc, deleteDoc,
+      onSnapshot, query, orderBy, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ✅ Save data to Firestore
-  async function saveData() {
-    if (!currentMatchId) return;
-    try {
-      console.log("Saving to Firestore:", { scores, goalStats, teamNames }); // debug log
-      await setDoc(doc(db, "matches", currentMatchId), {
-        scores: { ...scores },            // ensure plain object
-        goalStats: [...goalStats],        // ensure array is copied properly
-        teamNames: { ...teamNames },
-        created: matches.find(m => m.id === currentMatchId)?.created || new Date().toISOString()
+    // ===================== Your Firebase config =====================
+    const firebaseConfig = {
+      apiKey: "YOUR_KEY",
+      authDomain: "YOUR_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ===================== State =====================
+    let currentMatchId = null;
+    let unsubMatch = null;
+    let unsubList = null;
+
+    // convenience refs
+    const els = {
+      matchSelect: document.getElementById('matchSelect'),
+      newMatchBtn: document.getElementById('newMatchBtn'),
+      deleteMatchBtn: document.getElementById('deleteMatchBtn'),
+      team1Input: document.getElementById('team1Input'),
+      team2Input: document.getElementById('team2Input'),
+      team1Score: document.getElementById('team1Score'),
+      team2Score: document.getElementById('team2Score'),
+      resetBtn: document.getElementById('resetBtn'),
+      goalForm: document.getElementById('goalForm'),
+      teamSelect: document.getElementById('teamSelect'),
+      scorerInput: document.getElementById('scorerInput'),
+      assistInput: document.getElementById('assistInput'),
+      teamAStats: document.getElementById('teamAStats'),
+      teamBStats: document.getElementById('teamBStats'),
+      teamAStatsTitle: document.getElementById('teamAStatsTitle'),
+      teamBStatsTitle: document.getElementById('teamBStatsTitle')
+    };
+
+    // ===================== Render helpers =====================
+    function renderMatchData(data) {
+      const scores = data?.scores || { team1: 0, team2: 0 };
+      const teamNames = data?.teamNames || { team1: 'Team A', team2: 'Team B' };
+      const goals = data?.goals || [];
+
+      els.team1Input.value = teamNames.team1;
+      els.team2Input.value = teamNames.team2;
+      els.team1Score.textContent = scores.team1;
+      els.team2Score.textContent = scores.team2;
+      els.teamAStatsTitle.textContent = `${teamNames.team1} Goals`;
+      els.teamBStatsTitle.textContent = `${teamNames.team2} Goals`;
+
+      // repopulate selector labels
+      [...els.matchSelect.options].forEach(opt => {
+        if (opt.value === currentMatchId) {
+          opt.textContent = `${teamNames.team1} vs ${teamNames.team2}`;
+        }
       });
-    } catch (e) {
-      console.error("Error saving match data:", e);
-      alert("Failed to save match data.");
+
+      // goal lists
+      els.teamAStats.innerHTML = '';
+      els.teamBStats.innerHTML = '';
+      goals.forEach((g, i) => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between py-2';
+        const time = g.time ? new Date(g.time.seconds ? g.time.seconds * 1000 : g.time).toLocaleTimeString() : '';
+        li.innerHTML = `
+          <div>
+            <div class="font-semibold">${escapeHtml(g.scorer)}</div>
+            <div class="text-xs opacity-70">${g.assist ? `Assist: ${escapeHtml(g.assist)} · ` : ''}${time}</div>
+          </div>
+          <button class="rounded-lg px-2.5 py-1.5 bg-rose-600/90 hover:bg-rose-500 text-sm" data-del-index="${i}">Delete</button>
+        `;
+        if (g.team === 'team1') els.teamAStats.appendChild(li); else els.teamBStats.appendChild(li);
+      });
+
+      // attach delete handlers
+      els.teamAStats.querySelectorAll('button[data-del-index], [data-del-index]').forEach(btn => btn.addEventListener('click', onDeleteGoal));
+      els.teamBStats.querySelectorAll('button[data-del-index], [data-del-index]').forEach(btn => btn.addEventListener('click', onDeleteGoal));
     }
-  }
 
-  // ✅ Load matches
-  async function loadMatches() {
-    const querySnapshot = await getDocs(collection(db, "matches"));
-    matches = [];
-    querySnapshot.forEach(docSnap => {
-      matches.push({ id: docSnap.id, ...docSnap.data() });
-    });
-    renderMatchesList();
-  }
+    function escapeHtml(str = '') {
+      return str.replace(/[&<>"]+/g, s => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;'}[s]));
+    }
 
-  // ✅ Load a single match
-  async function loadMatch(matchId) {
-    const docRef = doc(db, "matches", matchId);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      scores = data.scores || { team1: 0, team2: 0 };
-      goalStats = data.goalStats || [];
-      teamNames = data.teamNames || { team1: "Team 1", team2: "Team 2" };
+    // ===================== Firestore wiring =====================
+    function listenToMatchList() {
+      if (unsubList) unsubList();
+      const q = query(collection(db, 'matches'), orderBy('created', 'desc'));
+      unsubList = onSnapshot(q, snap => {
+        const currentVal = els.matchSelect.value;
+        els.matchSelect.innerHTML = '';
+        snap.forEach(d => {
+          const data = d.data();
+          const opt = document.createElement('option');
+          opt.value = d.id;
+          opt.textContent = `${data?.teamNames?.team1 || 'Team A'} vs ${data?.teamNames?.team2 || 'Team B'}`;
+          els.matchSelect.appendChild(opt);
+        });
+        // keep selection if still present, else pick first
+        const found = [...els.matchSelect.options].some(o => o.value === currentVal);
+        if (found) els.matchSelect.value = currentVal;
+        if (!els.matchSelect.value && els.matchSelect.options.length) {
+          els.matchSelect.selectedIndex = 0;
+          selectMatch(els.matchSelect.value);
+        }
+      });
+    }
+
+    function listenToMatchDoc(matchId) {
+      if (unsubMatch) unsubMatch();
+      if (!matchId) return;
+      const ref = doc(db, 'matches', matchId);
+      unsubMatch = onSnapshot(ref, snap => {
+        if (snap.exists()) {
+          renderMatchData(snap.data());
+        }
+      });
+    }
+
+    async function selectMatch(matchId) {
       currentMatchId = matchId;
-      render();
-    }
-  }
-
-  // ✅ Add Goal (fixed)
-  async function addGoal(event) {
-    event.preventDefault();
-    const team = document.getElementById('teamSelect').value;
-    const scorer = document.getElementById('scorerInput').value.trim();
-    const assist = document.getElementById('assistInput').value.trim();
-
-    if (!team || !scorer) {
-      alert("Please fill scorer and team.");
-      return;
+      listenToMatchDoc(matchId);
     }
 
-    scores[team]++;
-    const goalEntry = { team, scorer };
-    if (assist) goalEntry.assist = assist;  // only add assist if provided
-    goalStats.push(goalEntry);
+    async function createMatch() {
+      const col = collection(db, 'matches');
+      const docRef = await addDoc(col, {
+        teamNames: { team1: 'Team A', team2: 'Team B' },
+        scores: { team1: 0, team2: 0 },
+        goals: [],
+        created: serverTimestamp(),
+        updated: serverTimestamp()
+      });
+      els.matchSelect.value = docRef.id;
+      await selectMatch(docRef.id);
+    }
 
-    await saveData();
-    render();
-    event.target.reset();
-  }
+    async function deleteMatch() {
+      if (!currentMatchId) return;
+      if (!confirm('Delete this match? This cannot be undone.')) return;
+      await deleteDoc(doc(db, 'matches', currentMatchId));
+      currentMatchId = null;
+      if (unsubMatch) unsubMatch();
+      // UI will refresh from list listener; if any remain, auto-select first
+    }
 
-  // ✅ Create Match
-  async function createMatch() {
-    const matchId = `match_${Date.now()}`;
-    currentMatchId = matchId;
-    scores = { team1: 0, team2: 0 };
-    goalStats = [];
-    teamNames = { team1: "Team 1", team2: "Team 2" };
-    await saveData();
-    await loadMatches();
-    render();
-  }
+    async function saveNamesDebounced() {
+      if (!currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      await updateDoc(ref, {
+        teamNames: { team1: els.team1Input.value.trim() || 'Team A', team2: els.team2Input.value.trim() || 'Team B' },
+        updated: serverTimestamp()
+      });
+    }
 
-  // ✅ Render Matches in <select>
-  function renderMatchesList() {
-    const selectEl = document.getElementById('matchSelect');
-    selectEl.innerHTML = "";
-    matches.forEach(match => {
-      const option = document.createElement("option");
-      option.value = match.id;
-      option.textContent = `${match.teamNames?.team1 || "Team 1"} vs ${match.teamNames?.team2 || "Team 2"}`;
-      if (match.id === currentMatchId) option.selected = true;
-      selectEl.appendChild(option);
+    async function adjustScore(team, delta) {
+      if (!currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const data = snap.data();
+      const scores = data.scores || { team1: 0, team2: 0 };
+      scores[team] = Math.max(0, (scores[team] || 0) + delta);
+      await updateDoc(ref, { scores, updated: serverTimestamp() });
+    }
+
+    async function resetScores() {
+      if (!currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      await updateDoc(ref, { scores: { team1: 0, team2: 0 }, goals: [], updated: serverTimestamp() });
+    }
+
+    async function addGoal(e) {
+      e.preventDefault();
+      if (!currentMatchId) return alert('Create or select a match first.');
+      const team = els.teamSelect.value;
+      const scorer = els.scorerInput.value.trim();
+      const assist = els.assistInput.value.trim();
+      if (!team || !scorer) return;
+
+      const ref = doc(db, 'matches', currentMatchId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const data = snap.data();
+      const scores = data.scores || { team1: 0, team2: 0 };
+      const goals = data.goals || [];
+
+      scores[team] = (scores[team] || 0) + 1;
+      const goal = { team, scorer, ...(assist ? { assist } : {}), time: Date.now() };
+      goals.push(goal);
+      await updateDoc(ref, { scores, goals, updated: serverTimestamp() });
+
+      els.goalForm.reset();
+    }
+
+    async function onDeleteGoal(ev) {
+      const idx = Number(ev.currentTarget.getAttribute('data-del-index'));
+      if (!Number.isFinite(idx) || !currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const data = snap.data();
+      const goals = data.goals || [];
+      const scores = data.scores || { team1: 0, team2: 0 };
+      const g = goals[idx];
+      if (!g) return;
+      // decrement score for the team of the deleted goal
+      scores[g.team] = Math.max(0, (scores[g.team] || 0) - 1);
+      goals.splice(idx, 1);
+      await updateDoc(ref, { scores, goals, updated: serverTimestamp() });
+    }
+
+    // ===================== Event listeners =====================
+    els.newMatchBtn.addEventListener('click', createMatch);
+    els.deleteMatchBtn.addEventListener('click', deleteMatch);
+    els.matchSelect.addEventListener('change', (e) => selectMatch(e.target.value));
+
+    // Debounce name saves
+    let nameTimer = null;
+    function queueNameSave() {
+      clearTimeout(nameTimer);
+      nameTimer = setTimeout(saveNamesDebounced, 400);
+    }
+    els.team1Input.addEventListener('input', queueNameSave);
+    els.team2Input.addEventListener('input', queueNameSave);
+
+    // Score buttons (+/-)
+    document.querySelectorAll('.score-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const team = btn.getAttribute('data-team');
+        const delta = Number(btn.getAttribute('data-delta')) || 0;
+        adjustScore(team, delta);
+      });
     });
-  }
 
-  // ✅ Delete a goal
-  async function deleteGoal(index) {
-    const goal = goalStats[index];
-    if (goal) {
-      scores[goal.team] = Math.max(0, scores[goal.team] - 1); // prevent negative scores
-      goalStats.splice(index, 1);
-      await saveData();
-      render();
-    }
-  }
+    els.resetBtn.addEventListener('click', resetScores);
+    els.goalForm.addEventListener('submit', addGoal);
 
-// ✅ Render UI
-function render() {
-  document.getElementById('team1Name').textContent = teamNames.team1;
-  document.getElementById('team2Name').textContent = teamNames.team2;
-  document.getElementById('team1Score').textContent = scores.team1;
-  document.getElementById('team2Score').textContent = scores.team2;
-  document.getElementById('teamAStatsTitle').textContent = `${teamNames.team1} Goals`;
-  document.getElementById('teamBStatsTitle').textContent = `${teamNames.team2} Goals`;
-
-  const teamAList = document.getElementById('teamAStats');
-  const teamBList = document.getElementById('teamBStats');
-  teamAList.innerHTML = "";
-  teamBList.innerHTML = "";
-
-  goalStats.forEach((g, i) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <span>${g.scorer}${g.assist ? " (Assist: " + g.assist + ")" : ""}</span>
-      <button class="delete-btn" onclick="deleteGoal(${i})">❌</button>
-    `;
-
-    if (g.team === "team1") {
-      teamAList.appendChild(li);
-    } else {
-      teamBList.appendChild(li);
-    }
-  });
-}
-
-  // ✅ Event Listeners
-  document.getElementById('goalForm').addEventListener('submit', addGoal);
-  document.getElementById('newMatchBtn').addEventListener('click', createMatch); // fixed id
-  document.getElementById('matchSelect').addEventListener('change', e => loadMatch(e.target.value));
-
-  // ✅ Init
-  loadMatches();
-</script>
-
+    // bootstrap
+    listenToMatchList();
+  </script>
 </body>
 </html>
