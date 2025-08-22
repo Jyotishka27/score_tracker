@@ -106,7 +106,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
       getFirestore, collection, doc, setDoc, updateDoc, getDoc, addDoc, deleteDoc,
-      onSnapshot, query, orderBy, serverTimestamp
+      onSnapshot, query, orderBy, serverTimestamp, increment
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     // ===================== Your Firebase config =====================
@@ -186,8 +186,8 @@
       });
 
       // attach delete handlers
-      els.teamAStats.querySelectorAll('button[data-del-index], [data-del-index]').forEach(btn => btn.addEventListener('click', onDeleteGoal));
-      els.teamBStats.querySelectorAll('button[data-del-index], [data-del-index]').forEach(btn => btn.addEventListener('click', onDeleteGoal));
+      els.teamAStats.querySelectorAll('button[data-del-index]').forEach(btn => btn.addEventListener('click', onDeleteGoal));
+      els.teamBStats.querySelectorAll('button[data-del-index]').forEach(btn => btn.addEventListener('click', onDeleteGoal));
     }
 
     function escapeHtml(str = '') {
@@ -234,10 +234,20 @@
       listenToMatchDoc(matchId);
     }
 
+    // ====== UPDATED: create match from currently typed names, with confirm ======
     async function createMatch() {
+      const nameA = (els.team1Input.value || '').trim();
+      const nameB = (els.team2Input.value || '').trim();
+      if (!nameA || !nameB) {
+        alert('Please enter both team names first.');
+        return;
+      }
+      const ok = confirm(`Create new match with:\n${nameA} vs ${nameB}?`);
+      if (!ok) return;
+
       const col = collection(db, 'matches');
       const docRef = await addDoc(col, {
-        teamNames: { team1: 'Team A', team2: 'Team B' },
+        teamNames: { team1: nameA, team2: nameB },
         scores: { team1: 0, team2: 0 },
         goals: [],
         created: serverTimestamp(),
@@ -265,6 +275,7 @@
       });
     }
 
+    // keep clamp-to-zero behavior for +/- buttons using read-modify-write
     async function adjustScore(team, delta) {
       if (!currentMatchId) return;
       const ref = doc(db, 'matches', currentMatchId);
@@ -282,6 +293,7 @@
       await updateDoc(ref, { scores: { team1: 0, team2: 0 }, goals: [], updated: serverTimestamp() });
     }
 
+    // ====== UPDATED: addGoal uses precise nested update so Team B always reflects ======
     async function addGoal(e) {
       e.preventDefault();
       if (!currentMatchId) return alert('Create or select a match first.');
@@ -293,14 +305,20 @@
       const ref = doc(db, 'matches', currentMatchId);
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
-      const data = snap.data();
-      const scores = data.scores || { team1: 0, team2: 0 };
-      const goals = data.goals || [];
 
-      scores[team] = (scores[team] || 0) + 1;
+      // build new goals array (we still store full objects for the list)
+      const data = snap.data();
+      const goals = Array.isArray(data.goals) ? [...data.goals] : [];
       const goal = { team, scorer, ...(assist ? { assist } : {}), time: Date.now() };
       goals.push(goal);
-      await updateDoc(ref, { scores, goals, updated: serverTimestamp() });
+
+      // 1) bump the correct team score atomically with nested path
+      // 2) write updated goals
+      await updateDoc(ref, {
+        [`scores.${team}`]: increment(1),
+        goals,
+        updated: serverTimestamp()
+      });
 
       els.goalForm.reset();
     }
@@ -313,13 +331,16 @@
       if (!snap.exists()) return;
       const data = snap.data();
       const goals = data.goals || [];
-      const scores = data.scores || { team1: 0, team2: 0 };
       const g = goals[idx];
       if (!g) return;
-      // decrement score for the team of the deleted goal
-      scores[g.team] = Math.max(0, (scores[g.team] || 0) - 1);
+
+      // decrement the score for the team of the deleted goal, clamp to 0
+      const currentTeamScore = (data.scores?.[g.team] ?? 0);
+      const newTeamScore = Math.max(0, currentTeamScore - 1);
+      const newScores = { ...(data.scores || { team1:0, team2:0 }), [g.team]: newTeamScore };
+
       goals.splice(idx, 1);
-      await updateDoc(ref, { scores, goals, updated: serverTimestamp() });
+      await updateDoc(ref, { scores: newScores, goals, updated: serverTimestamp() });
     }
 
     // ===================== Event listeners =====================
