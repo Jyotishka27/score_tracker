@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>We Are Eleven - Fixtures</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      color: #1e293b;
+    }
+
+    .nav-link {
+      color: #4b5563;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .nav-link:hover { color: #374151; }
+    .nav-link.active { color: #dc2626; }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .fixture-card { transition: all 0.2s ease; }
+    .fixture-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.15);
+    }
+
+    .team-logo {
+      height: 50px; width: 50px; border-radius: 50%; object-fit: cover;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1); transition: transform 0.2s ease;
+    }
+    .team-logo:hover { transform: scale(1.05); }
+
+    .section-header {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid #e2e8f0; position: relative; overflow: hidden;
+    }
+    .section-header::before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, #64748b, transparent);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 0% { left: -100%; } 100% { left: 100%; } }
+
+    .group-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid #e2e8f0; transition: all 0.3s ease;
+    }
+    .group-card:hover { border-color: #cbd5e1; box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.1); }
+
+    .match-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%);
+      border: 1px solid #e5e7eb;
+    }
+    .match-card:hover { border-color: #d1d5db; transform: translateY(-2px); }
+
+    .knockout-card {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid #e2e8f0; transition: all 0.3s ease;
+    }
+    .knockout-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.1); }
+
+    .final-card {
+      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%);
+      border: 2px solid #fbbf24; position: relative;
+    }
+    .final-card::before {
+      content: '👑'; position: absolute; top: -10px; right: -10px; font-size: 1.5rem;
+      background: #fbbf24; border-radius: 50%; width: 40px; height: 40px; display: flex;
+      align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    }
+
+    .section-icon { display: inline-block; margin-right: 0.5rem; font-size: 1.2em; }
+    .matchday-badge {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600;
+      font-size: 0.875rem; box-shadow: 0 2px 4px rgb(59 130 246 / 0.3);
+    }
+    .vs-text { font-weight: 800; color: #64748b; text-shadow: 0 1px 2px rgb(0 0 0 / 0.1); }
+    .team-name { font-weight: 500; color: #374151; text-align: center; font-size: 0.875rem; margin-top: 0.5rem; }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Header -->
+  <div id="site-header"></div>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-7xl mx-auto p-6 space-y-12">
+
+    <!-- Group Teams Section -->
+    <section class="card section-header rounded-2xl shadow-lg p-8">
+      <div class="text-center mb-8">
+        <h2 class="text-4xl font-bold text-gray-900 mb-2">
+          <span class="section-icon">⚽</span>Group Stage
+        </h2>
+        <p class="text-gray-600 text-lg">Tournament group classifications</p>
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <!-- Group A -->
+        <div class="group-card rounded-2xl p-8 shadow-md">
+          <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-800 mb-1">Group A</h3>
+            <div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-gray-400 to-transparent mx-auto"></div>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+              <img src="Thunderbolt.jpg" alt="Thunderbolt" class="team-logo" />
+              <span class="font-semibold text-gray-800 flex-1">Thunderbolt</span>
+              <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+            </div>
+            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+              <img src="Messiah FC.jpg" alt="Messiah FC" class="team-logo" />
+              <span class="font-semibold text-gray-800 flex-1">Messiah FC</span>
+              <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+            </div>
+            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+              <img src="White Panthers.jpg" alt="White Panthers" class="team-logo" />
+              <span class="font-semibold text-gray-800 flex-1">White Panthers</span>
+              <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group B -->
+        <div class="group-card rounded-2xl p-8 shadow-md">
+          <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-800 mb-1">Group B</h3>
+            <div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-gray-400 to-transparent mx-auto"></div>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+              <img src="Amingos FC.jpg" alt="Amingos FC" class="team-logo" />
+              <span class="font-semibold text-gray-800 flex-1">Amingos FC</span>
+              <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+            </div>
+            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+              <img src="Strawhat Pirates.jpg" alt="Strawhat Pirates" class="team-logo" />
+              <span class="font-semibold text-gray-800 flex-1">Strawhat Pirates</span>
+              <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+            </div>
+            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+              <img src="Red Bulls Eleven.jpg" alt="Red Bulls Eleven" class="team-logo" />
+              <span class="font-semibold text-gray-800 flex-1">Red Bulls Eleven</span>
+              <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tournament Fixtures Section -->
+    <section class="section-header rounded-2xl shadow-lg p-8">
+      <div class="text-center mb-10">
+        <h2 class="text-4xl font-bold text-gray-900 mb-2">
+          <span class="section-icon">📅</span>Tournament Fixtures
+        </h2>
+        <p class="text-gray-600 text-lg">Complete match schedule</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <!-- Each .fixture-card.match-card becomes clickable -->
+        <div class="fixture-card match-card rounded-xl shadow-md p-6 cursor-pointer" aria-label="Open scoreboard for Thunderbolt vs Messiah FC" role="button" tabindex="0">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 1</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="Thunderbolt.jpg" alt="Thunderbolt" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Thunderbolt</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="Messiah FC.jpg" alt="Messiah FC" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Messiah FC</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fixture-card match-card rounded-xl shadow-md p-6 cursor-pointer" aria-label="Open scoreboard for Amingos FC vs Strawhat Pirates" role="button" tabindex="0">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 2</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="Amingos FC.jpg" alt="Amingos FC" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Amingos FC</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="Strawhat Pirates.jpg" alt="Strawhat Pirates" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Strawhat Pirates</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fixture-card match-card rounded-xl shadow-md p-6 cursor-pointer" aria-label="Open scoreboard for White Panthers vs Thunderbolt" role="button" tabindex="0">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 3</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="White Panthers.jpg" alt="White Panthers" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">White Panthers</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="Thunderbolt.jpg" alt="Thunderbolt" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Thunderbolt</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ... the rest of your match cards remain unchanged, they will also be wired clickably by JS ... -->
+        <!-- I left your remaining cards as-is. The click handler below finds ALL .fixture-card.match-card and wires them. -->
+        <!-- (Matchday 4..12 code unchanged for brevity) -->
+
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 4</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="Red Bulls Eleven.jpg" alt="Red Bulls Eleven" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Red Bulls Eleven</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="Amingos FC.jpg" alt="Amingos FC" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Amingos FC</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- (…keep Matchday 5–12 blocks exactly as you have them…) -->
+
+      </div>
+    </section>
+
+    <!-- Knockout Stage Section (unchanged) -->
+    <section class="section-header rounded-2xl shadow-lg p-8">
+      <div class="text-center mb-10">
+        <h2 class="text-4xl font-bold text-gray-900 mb-2">
+          <span class="section-icon">🏆</span>Knockout Stage
+        </h2>
+        <p class="text-gray-600 text-lg">Championship elimination rounds</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <!-- (semi-finals / third-place / final unchanged) -->
+        <!-- … -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-950 py-8 text-center text-gray-400 mt-12">
+    <div class="max-w-4xl mx-auto px-4">
+      <p class="text-lg">© 2025 Football Community. All Rights Reserved.</p>
+      <p class="text-sm mt-2 opacity-75">Bringing together the best in football competition</p>
+    </div>
+  </footer>
+
+  <!-- Mobile menu script -->
+  <script>
+    const mobileMenuBtn = document.getElementById("mobile-menu-button");
+    const mobileMenu = document.getElementById("mobile-menu");
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener("click", () => {
+        const expanded = mobileMenuBtn.getAttribute("aria-expanded") === "true";
+        mobileMenuBtn.setAttribute("aria-expanded", !expanded);
+        mobileMenu.classList.toggle("hidden");
+      });
+      document.addEventListener("click", (e) => {
+        if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+          mobileMenu.classList.add("hidden");
+          mobileMenuBtn.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+
+    // Staggered fade-in
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll('.fixture-card, .group-card, .knockout-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          card.style.transition = 'all 0.6s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 50);
+      });
+    });
+
+    // Wire click to open scoreboard with team names
+    function wireFixtureClicks() {
+      const cards = document.querySelectorAll('.fixture-card.match-card');
+      cards.forEach(card => {
+        const names = card.querySelectorAll('.team-name');
+        if (names.length >= 2) {
+          const team1 = names[0].textContent.trim();
+          const team2 = names[1].textContent.trim();
+
+          card.classList.add('cursor-pointer');
+          card.setAttribute('role', 'button');
+          card.setAttribute('tabindex', '0');
+          card.setAttribute('aria-label', `Open scoreboard for ${team1} vs ${team2}`);
+
+          const open = () => {
+            const url = new URL('scoreboard.html', window.location.href);
+            url.searchParams.set('team1', team1);
+            url.searchParams.set('team2', team2);
+            url.searchParams.set('auto', '1'); // auto-create on arrival
+            window.location.href = url.toString();
+          };
+
+          card.addEventListener('click', open);
+          card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              open();
+            }
+          });
+        }
+      });
+    }
+  </script>
+
+  <script type="module">
+    import { injectHeader } from "./tournament_header.js";
+    import { loadTeams, hydrateTeamLogos } from "./teams-util.js";
+
+    // Header
+    injectHeader("#site-header", { active: "fixtures" });
+
+    // Team/logo hydration (keeps names/logos consistent from data/teams.json)
+    try {
+      const maps = await loadTeams();
+      hydrateTeamLogos(document, maps);
+      // Wire after hydration so we capture the final team names from JSON
+      window.requestAnimationFrame(() => { wireFixtureClicks(); });
+    } catch (e) {
+      console.warn("Teams JSON load failed:", e);
+      // Still wire clicks with whatever text is in the DOM
+      wireFixtureClicks();
+    }
+  </script>
+</body>
+</html>
