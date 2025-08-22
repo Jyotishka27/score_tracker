@@ -6,84 +6,28 @@
   <title>We Are Eleven - Fixtures</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-      color: #1e293b;
-    }
-
-    .nav-link {
-      color: #4b5563;
-      font-weight: 500;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); color: #1e293b; }
+    .nav-link { color: #4b5563; font-weight: 500; text-decoration: none; transition: color 0.2s ease; }
     .nav-link:hover { color: #374151; }
     .nav-link.active { color: #dc2626; }
-
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
+    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     .fixture-card { transition: all 0.2s ease; }
-    .fixture-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.15);
-    }
-
-    .team-logo {
-      height: 50px; width: 50px; border-radius: 50%; object-fit: cover;
-      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1); transition: transform 0.2s ease;
-    }
+    .fixture-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.15); }
+    .team-logo { height: 50px; width: 50px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 8px rgb(0 0 0 / 0.1); transition: transform 0.2s ease; }
     .team-logo:hover { transform: scale(1.05); }
-
-    .section-header {
-      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-      border: 1px solid #e2e8f0; position: relative; overflow: hidden;
-    }
-    .section-header::before {
-      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px;
-      background: linear-gradient(90deg, transparent, #64748b, transparent);
-      animation: shimmer 3s infinite;
-    }
+    .section-header { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; position: relative; overflow: hidden; }
+    .section-header::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #64748b, transparent); animation: shimmer 3s infinite; }
     @keyframes shimmer { 0% { left: -100%; } 100% { left: 100%; } }
-
-    .group-card {
-      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-      border: 1px solid #e2e8f0; transition: all 0.3s ease;
-    }
+    .group-card { background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; transition: all 0.3s ease; }
     .group-card:hover { border-color: #cbd5e1; box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.1); }
-
-    .match-card {
-      background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%);
-      border: 1px solid #e5e7eb;
-    }
+    .match-card { background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%); border: 1px solid #e5e7eb; }
     .match-card:hover { border-color: #d1d5db; transform: translateY(-2px); }
-
-    .knockout-card {
-      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-      border: 1px solid #e2e8f0; transition: all 0.3s ease;
-    }
+    .knockout-card { background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; transition: all 0.3s ease; }
     .knockout-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.1); }
-
-    .final-card {
-      background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%);
-      border: 2px solid #fbbf24; position: relative;
-    }
-    .final-card::before {
-      content: '👑'; position: absolute; top: -10px; right: -10px; font-size: 1.5rem;
-      background: #fbbf24; border-radius: 50%; width: 40px; height: 40px; display: flex;
-      align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    }
-
+    .final-card { background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%); border: 2px solid #fbbf24; position: relative; }
+    .final-card::before { content: '👑'; position: absolute; top: -10px; right: -10px; font-size: 1.5rem; background: #fbbf24; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
     .section-icon { display: inline-block; margin-right: 0.5rem; font-size: 1.2em; }
-    .matchday-badge {
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600;
-      font-size: 0.875rem; box-shadow: 0 2px 4px rgb(59 130 246 / 0.3);
-    }
+    .matchday-badge { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; font-size: 0.875rem; box-shadow: 0 2px 4px rgb(59 130 246 / 0.3); }
     .vs-text { font-weight: 800; color: #64748b; text-shadow: 0 1px 2px rgb(0 0 0 / 0.1); }
     .team-name { font-weight: 500; color: #374151; text-align: center; font-size: 0.875rem; margin-top: 0.5rem; }
   </style>
@@ -92,9 +36,6 @@
 
   <!-- Header -->
   <div id="site-header"></div>
-
-  <!-- Main Content -->
-  <main class="flex-grow max-w-7xl mx-auto p-6 space-y-12">
 
     <!-- Group Teams Section -->
     <section class="card section-header rounded-2xl shadow-lg p-8">
@@ -473,23 +414,10 @@
     </div>
   </footer>
 
-  <!-- Mobile menu script -->
+  <!-- Behavior + progressive enhancements -->
   <script>
-    const mobileMenuBtn = document.getElementById("mobile-menu-button");
-    const mobileMenu = document.getElementById("mobile-menu");
-    if (mobileMenuBtn && mobileMenu) {
-      mobileMenuBtn.addEventListener("click", () => {
-        const expanded = mobileMenuBtn.getAttribute("aria-expanded") === "true";
-        mobileMenuBtn.setAttribute("aria-expanded", !expanded);
-        mobileMenu.classList.toggle("hidden");
-      });
-      document.addEventListener("click", (e) => {
-        if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
-          mobileMenu.classList.add("hidden");
-          mobileMenuBtn.setAttribute("aria-expanded", "false");
-        }
-      });
-    }
+    // === EDIT THIS if your scoreboard file lives elsewhere ===
+    const SCOREBOARD_PATH = "./scoreboard.html";
 
     // Staggered fade-in
     document.addEventListener("DOMContentLoaded", () => {
@@ -505,57 +433,60 @@
       });
     });
 
-    // Wire click to open scoreboard with team names
-    function wireFixtureClicks() {
-      const cards = document.querySelectorAll('.fixture-card.match-card');
-      cards.forEach(card => {
-        const names = card.querySelectorAll('.team-name');
-        if (names.length >= 2) {
-          const team1 = names[0].textContent.trim();
-          const team2 = names[1].textContent.trim();
+    // Utility: escape for URL params
+    const encode = s => encodeURIComponent((s || '').trim());
 
-          card.classList.add('cursor-pointer');
-          card.setAttribute('role', 'button');
-          card.setAttribute('tabindex', '0');
-          card.setAttribute('aria-label', `Open scoreboard for ${team1} vs ${team2}`);
-
-          const open = () => {
-            const url = new URL('scoreboard.html', window.location.href);
-            url.searchParams.set('team1', team1);
-            url.searchParams.set('team2', team2);
-            url.searchParams.set('auto', '1'); // auto-create on arrival
-            window.location.href = url.toString();
-          };
-
-          card.addEventListener('click', open);
-          card.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              open();
-            }
-          });
-        }
-      });
+    // Get team names from a card (first two .team-name elements)
+    function getNamesFromCard(card) {
+      const names = card.querySelectorAll('.team-name');
+      const t1 = names[0]?.textContent?.trim() || '';
+      const t2 = names[1]?.textContent?.trim() || '';
+      return { t1, t2 };
     }
+
+    // Build target URL to scoreboard
+    function buildScoreboardURL(t1, t2) {
+      const url = new URL(SCOREBOARD_PATH, window.location.href);
+      url.searchParams.set('team1', t1);
+      url.searchParams.set('team2', t2);
+      url.searchParams.set('auto', '1'); // auto-create on arrival
+      return url.toString();
+    }
+
+    // Event delegation: handle clicks on any .fixture-card.match-card
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('.fixture-card.match-card');
+      if (!card) return;
+      const { t1, t2 } = getNamesFromCard(card);
+      if (!t1 || !t2) return; // require both names
+      window.location.href = buildScoreboardURL(t1, t2);
+    });
+
+    // Keyboard accessibility
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const card = e.target.closest('.fixture-card.match-card');
+      if (!card) return;
+      e.preventDefault();
+      const { t1, t2 } = getNamesFromCard(card);
+      if (!t1 || !t2) return;
+      window.location.href = buildScoreboardURL(t1, t2);
+    });
   </script>
 
   <script type="module">
     import { injectHeader } from "./tournament_header.js";
     import { loadTeams, hydrateTeamLogos } from "./teams-util.js";
 
-    // Header
     injectHeader("#site-header", { active: "fixtures" });
 
-    // Team/logo hydration (keeps names/logos consistent from data/teams.json)
+    // If you hydrate names/logos from JSON, run it — the delegated listener
+    // above will still work because it reads names at click time.
     try {
       const maps = await loadTeams();
       hydrateTeamLogos(document, maps);
-      // Wire after hydration so we capture the final team names from JSON
-      window.requestAnimationFrame(() => { wireFixtureClicks(); });
     } catch (e) {
       console.warn("Teams JSON load failed:", e);
-      // Still wire clicks with whatever text is in the DOM
-      wireFixtureClicks();
     }
   </script>
 </body>
