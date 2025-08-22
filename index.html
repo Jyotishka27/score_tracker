@@ -168,8 +168,8 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        <!-- Each .fixture-card.match-card becomes clickable -->
-        <div class="fixture-card match-card rounded-xl shadow-md p-6 cursor-pointer" aria-label="Open scoreboard for Thunderbolt vs Messiah FC" role="button" tabindex="0">
+        <!-- Matchday Cards -->
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
           <div class="flex justify-center mb-4">
             <span class="matchday-badge">Matchday 1</span>
           </div>
@@ -186,7 +186,7 @@
           </div>
         </div>
 
-        <div class="fixture-card match-card rounded-xl shadow-md p-6 cursor-pointer" aria-label="Open scoreboard for Amingos FC vs Strawhat Pirates" role="button" tabindex="0">
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
           <div class="flex justify-center mb-4">
             <span class="matchday-badge">Matchday 2</span>
           </div>
@@ -203,7 +203,7 @@
           </div>
         </div>
 
-        <div class="fixture-card match-card rounded-xl shadow-md p-6 cursor-pointer" aria-label="Open scoreboard for White Panthers vs Thunderbolt" role="button" tabindex="0">
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
           <div class="flex justify-center mb-4">
             <span class="matchday-badge">Matchday 3</span>
           </div>
@@ -219,10 +219,6 @@
             </div>
           </div>
         </div>
-
-        <!-- ... the rest of your match cards remain unchanged, they will also be wired clickably by JS ... -->
-        <!-- I left your remaining cards as-is. The click handler below finds ALL .fixture-card.match-card and wires them. -->
-        <!-- (Matchday 4..12 code unchanged for brevity) -->
 
         <div class="fixture-card match-card rounded-xl shadow-md p-6">
           <div class="flex justify-center mb-4">
@@ -241,12 +237,145 @@
           </div>
         </div>
 
-        <!-- (…keep Matchday 5–12 blocks exactly as you have them…) -->
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 5</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="Messiah FC.jpg" alt="Messiah FC" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Messiah FC</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="White Panthers.jpg" alt="White Panthers" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">White Panthers</span>
+            </div>
+          </div>
+        </div>
 
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 6</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="Strawhat Pirates.jpg" alt="Strawhat Pirates" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Strawhat Pirates</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="Red Bulls Eleven.jpg" alt="Red Bulls Eleven" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Red Bulls Eleven</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 7</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="Messiah FC.jpg" alt="Messiah FC" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Messiah FC</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="Thunderbolt.jpg" alt="Thunderbolt" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Thunderbolt</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 8</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="Strawhat Pirates.jpg" alt="Strawhat Pirates" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Strawhat Pirates</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="Amingos FC.jpg" alt="Amingos FC" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Amingos FC</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 9</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="Thunderbolt.jpg" alt="Thunderbolt" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Thunderbolt</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="White Panthers.jpg" alt="White Panthers" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">White Panthers</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 10</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="Amingos FC.jpg" alt="Amingos FC" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Amingos FC</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="Red Bulls Eleven.jpg" alt="Red Bulls Eleven" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Red Bulls Eleven</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 11</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="White Panthers.jpg" alt="White Panthers" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">White Panthers</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="Messiah FC.jpg" alt="Messiah FC" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Messiah FC</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fixture-card match-card rounded-xl shadow-md p-6">
+          <div class="flex justify-center mb-4">
+            <span class="matchday-badge">Matchday 12</span>
+          </div>
+          <div class="flex items-center justify-center gap-6">
+            <div class="flex flex-col items-center">
+              <img src="Red Bulls Eleven.jpg" alt="Red Bulls Eleven" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Red Bulls Eleven</span>
+            </div>
+            <span class="vs-text text-xl">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="Strawhat Pirates.jpg" alt="Strawhat Pirates" class="h-14 w-14 rounded-full shadow-md mb-3" />
+              <span class="team-name">Strawhat Pirates</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Knockout Stage Section (unchanged) -->
+    <!-- Knockout Stage Section -->
     <section class="section-header rounded-2xl shadow-lg p-8">
       <div class="text-center mb-10">
         <h2 class="text-4xl font-bold text-gray-900 mb-2">
@@ -256,8 +385,81 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
-        <!-- (semi-finals / third-place / final unchanged) -->
-        <!-- … -->
+        <!-- Semi Final 1 -->
+        <div class="knockout-card rounded-2xl shadow-md p-6">
+          <div class="text-center mb-6">
+            <h4 class="text-xl font-bold text-gray-800 mb-2">Semi Final 1</h4>
+            <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-blue-400 to-transparent mx-auto"></div>
+          </div>
+          <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-col items-center">
+              <img src="defaultlogo.jpg" alt="Winner Group A" class="h-16 w-16 rounded-full shadow-md mb-2" />
+              <span class="text-sm font-medium text-gray-600">Winner Group A</span>
+            </div>
+            <span class="vs-text text-lg">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="defaultlogo.jpg" alt="Runner-up Group B" class="h-16 w-16 rounded-full shadow-md mb-2" />
+              <span class="text-sm font-medium text-gray-600">Runner-up Group B</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semi Final 2 -->
+        <div class="knockout-card rounded-2xl shadow-md p-6">
+          <div class="text-center mb-6">
+            <h4 class="text-xl font-bold text-gray-800 mb-2">Semi Final 2</h4>
+            <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-blue-400 to-transparent mx-auto"></div>
+          </div>
+          <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-col items-center">
+              <img src="defaultlogo.jpg" alt="Winner Group B" class="h-16 w-16 rounded-full shadow-md mb-2" />
+              <span class="text-sm font-medium text-gray-600">Winner Group B</span>
+            </div>
+            <span class="vs-text text-lg">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="defaultlogo.jpg" alt="Runner-up Group A" class="h-16 w-16 rounded-full shadow-md mb-2" />
+              <span class="text-sm font-medium text-gray-600">Runner-up Group A</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Third Place Match -->
+        <div class="knockout-card rounded-2xl shadow-md p-6">
+          <div class="text-center mb-6">
+            <h4 class="text-xl font-bold text-gray-800 mb-2">Third Place</h4>
+            <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-orange-400 to-transparent mx-auto"></div>
+          </div>
+          <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-col items-center">
+              <img src="defaultlogo.jpg" alt="Loser SF1" class="h-16 w-16 rounded-full shadow-md mb-2" />
+              <span class="text-sm font-medium text-gray-600">Loser SF1</span>
+            </div>
+            <span class="vs-text text-lg">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="defaultlogo.jpg" alt="Loser SF2" class="h-16 w-16 rounded-full shadow-md mb-2" />
+              <span class="text-sm font-medium text-gray-600">Loser SF2</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Final -->
+        <div class="final-card rounded-2xl shadow-lg p-6">
+          <div class="text-center mb-6">
+            <h4 class="text-xl font-bold text-amber-800 mb-2">Championship Final</h4>
+            <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto"></div>
+          </div>
+          <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-col items-center">
+              <img src="defaultlogo.jpg" alt="Winner SF1" class="h-18 w-18 rounded-full shadow-lg mb-2 ring-2 ring-amber-300" />
+              <span class="text-sm font-semibold text-amber-700">Winner SF1</span>
+            </div>
+            <span class="vs-text text-xl text-amber-600">VS</span>
+            <div class="flex flex-col items-center">
+              <img src="defaultlogo.jpg" alt="Winner SF2" class="h-18 w-18 rounded-full shadow-lg mb-2 ring-2 ring-amber-300" />
+              <span class="text-sm font-semibold text-amber-700">Winner SF2</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
