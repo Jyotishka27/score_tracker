@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Live Tournament Scoreboard</title>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     html, body { background: #0b1220; }
@@ -49,7 +48,7 @@
         </div>
       </div>
 
-      <!-- VS -->
+      <!-- Center -->
       <div class="glass rounded-2xl p-5 border border-white/10 flex flex-col items-center justify-center text-center">
         <div class="text-4xl font-black">VS</div>
         <div class="mt-2 text-xs opacity-70">Match clock (optional)</div>
@@ -72,7 +71,7 @@
       </div>
     </section>
 
-    <!-- Card: Add goal -->
+    <!-- Add goal -->
     <section class="glass rounded-2xl p-5 border border-white/10 mt-6">
       <h2 class="text-lg font-semibold">Add a Goal</h2>
       <form id="goalForm" class="grid md:grid-cols-4 gap-3 mt-3">
@@ -87,7 +86,7 @@
       </form>
     </section>
 
-    <!-- Card: Goal lists -->
+    <!-- Goal lists -->
     <section class="grid md:grid-cols-2 gap-6 mt-6">
       <div class="glass rounded-2xl p-5 border border-white/10">
         <h3 id="teamAStatsTitle" class="font-semibold text-indigo-300">Team A Goals</h3>
@@ -102,14 +101,12 @@
 
   <!-- Firebase + App -->
   <script type="module">
-    // ===================== Firebase SDKs =====================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
       getFirestore, collection, doc, setDoc, updateDoc, getDoc, addDoc, deleteDoc,
       onSnapshot, query, orderBy, serverTimestamp, increment
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // ===================== Your Firebase config =====================
     const firebaseConfig = {
       apiKey: "AIzaSyB0DaaYB1hZLY8h23QOpT7Ok4sX5ACkHTM",
       authDomain: "we-are-eleven.firebaseapp.com",
@@ -123,12 +120,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ===================== State =====================
     let currentMatchId = null;
     let unsubMatch = null;
     let unsubList = null;
 
-    // convenience refs
     const els = {
       matchSelect: document.getElementById('matchSelect'),
       newMatchBtn: document.getElementById('newMatchBtn'),
@@ -148,7 +143,6 @@
       teamBStatsTitle: document.getElementById('teamBStatsTitle')
     };
 
-    // ===================== Render helpers =====================
     function renderMatchData(data) {
       const scores = data?.scores || { team1: 0, team2: 0 };
       const teamNames = data?.teamNames || { team1: 'Team A', team2: 'Team B' };
@@ -161,14 +155,12 @@
       els.teamAStatsTitle.textContent = `${teamNames.team1} Goals`;
       els.teamBStatsTitle.textContent = `${teamNames.team2} Goals`;
 
-      // repopulate selector labels
       [...els.matchSelect.options].forEach(opt => {
         if (opt.value === currentMatchId) {
           opt.textContent = `${teamNames.team1} vs ${teamNames.team2}`;
         }
       });
 
-      // goal lists
       els.teamAStats.innerHTML = '';
       els.teamBStats.innerHTML = '';
       goals.forEach((g, i) => {
@@ -182,10 +174,9 @@
           </div>
           <button class="rounded-lg px-2.5 py-1.5 bg-rose-600/90 hover:bg-rose-500 text-sm" data-del-index="${i}">Delete</button>
         `;
-        if (g.team === 'team1') els.teamAStats.appendChild(li); else els.teamBStats.appendChild(li);
+        (g.team === 'team1' ? els.teamAStats : els.teamBStats).appendChild(li);
       });
 
-      // attach delete handlers
       els.teamAStats.querySelectorAll('button[data-del-index]').forEach(btn => btn.addEventListener('click', onDeleteGoal));
       els.teamBStats.querySelectorAll('button[data-del-index]').forEach(btn => btn.addEventListener('click', onDeleteGoal));
     }
@@ -194,7 +185,6 @@
       return str.replace(/[&<>"]+/g, s => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;'}[s]));
     }
 
-    // ===================== Firestore wiring =====================
     function listenToMatchList() {
       if (unsubList) unsubList();
       const q = query(collection(db, 'matches'), orderBy('created', 'desc'));
@@ -208,7 +198,6 @@
           opt.textContent = `${data?.teamNames?.team1 || 'Team A'} vs ${data?.teamNames?.team2 || 'Team B'}`;
           els.matchSelect.appendChild(opt);
         });
-        // keep selection if still present, else pick first
         const found = [...els.matchSelect.options].some(o => o.value === currentVal);
         if (found) els.matchSelect.value = currentVal;
         if (!els.matchSelect.value && els.matchSelect.options.length) {
@@ -223,9 +212,7 @@
       if (!matchId) return;
       const ref = doc(db, 'matches', matchId);
       unsubMatch = onSnapshot(ref, snap => {
-        if (snap.exists()) {
-          renderMatchData(snap.data());
-        }
+        if (snap.exists()) renderMatchData(snap.data());
       });
     }
 
@@ -234,17 +221,19 @@
       listenToMatchDoc(matchId);
     }
 
-    // ====== UPDATED: create match from currently typed names, with confirm ======
-    async function createMatch() {
+    // Create a match from the current inputs.
+    // If silent=true, no confirmation prompt.
+    async function createMatch({ silent = false } = {}) {
       const nameA = (els.team1Input.value || '').trim();
       const nameB = (els.team2Input.value || '').trim();
       if (!nameA || !nameB) {
         alert('Please enter both team names first.');
         return;
       }
-      const ok = confirm(`Create new match with:\n${nameA} vs ${nameB}?`);
-      if (!ok) return;
-
+      if (!silent) {
+        const ok = confirm(`Create new match with:\n${nameA} vs ${nameB}?`);
+        if (!ok) return;
+      }
       const col = collection(db, 'matches');
       const docRef = await addDoc(col, {
         teamNames: { team1: nameA, team2: nameB },
@@ -263,19 +252,20 @@
       await deleteDoc(doc(db, 'matches', currentMatchId));
       currentMatchId = null;
       if (unsubMatch) unsubMatch();
-      // UI will refresh from list listener; if any remain, auto-select first
     }
 
     async function saveNamesDebounced() {
       if (!currentMatchId) return;
       const ref = doc(db, 'matches', currentMatchId);
       await updateDoc(ref, {
-        teamNames: { team1: els.team1Input.value.trim() || 'Team A', team2: els.team2Input.value.trim() || 'Team B' },
+        teamNames: {
+          team1: els.team1Input.value.trim() || 'Team A',
+          team2: els.team2Input.value.trim() || 'Team B'
+        },
         updated: serverTimestamp()
       });
     }
 
-    // keep clamp-to-zero behavior for +/- buttons using read-modify-write
     async function adjustScore(team, delta) {
       if (!currentMatchId) return;
       const ref = doc(db, 'matches', currentMatchId);
@@ -293,7 +283,6 @@
       await updateDoc(ref, { scores: { team1: 0, team2: 0 }, goals: [], updated: serverTimestamp() });
     }
 
-    // ====== UPDATED: addGoal uses precise nested update so Team B always reflects ======
     async function addGoal(e) {
       e.preventDefault();
       if (!currentMatchId) return alert('Create or select a match first.');
@@ -306,16 +295,13 @@
       const snap = await getDoc(ref);
       if (!snap.exists()) return;
 
-      // build new goals array (we still store full objects for the list)
       const data = snap.data();
       const goals = Array.isArray(data.goals) ? [...data.goals] : [];
       const goal = { team, scorer, ...(assist ? { assist } : {}), time: Date.now() };
       goals.push(goal);
 
-      // 1) bump the correct team score atomically with nested path
-      // 2) write updated goals
       await updateDoc(ref, {
-        [`scores.${team}`]: increment(1),
+        [`scores.${team}`]: increment(1), // exact nested path; Team B safe
         goals,
         updated: serverTimestamp()
       });
@@ -334,7 +320,6 @@
       const g = goals[idx];
       if (!g) return;
 
-      // decrement the score for the team of the deleted goal, clamp to 0
       const currentTeamScore = (data.scores?.[g.team] ?? 0);
       const newTeamScore = Math.max(0, currentTeamScore - 1);
       const newScores = { ...(data.scores || { team1:0, team2:0 }), [g.team]: newTeamScore };
@@ -343,12 +328,37 @@
       await updateDoc(ref, { scores: newScores, goals, updated: serverTimestamp() });
     }
 
+    // ---- Prefill from URL & auto-create / deep-link support ----
+    async function readPrefillFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const t1 = params.get('team1');
+      const t2 = params.get('team2');
+      const auto = params.get('auto');        // "1" => auto-create
+      const mid = params.get('matchId');      // optional deep link
+
+      if (t1) els.team1Input.value = t1;
+      if (t2) els.team2Input.value = t2;
+
+      if (t1) els.teamAStatsTitle.textContent = `${t1} Goals`;
+      if (t2) els.teamBStatsTitle.textContent = `${t2} Goals`;
+
+      if (mid) {
+        // Deep-link to existing match takes precedence
+        await selectMatch(mid);
+        return;
+      }
+
+      if (t1 && t2 && auto === '1') {
+        // Create silently from provided names
+        await createMatch({ silent: true });
+      }
+    }
+
     // ===================== Event listeners =====================
-    els.newMatchBtn.addEventListener('click', createMatch);
+    els.newMatchBtn.addEventListener('click', () => createMatch({ silent: false }));
     els.deleteMatchBtn.addEventListener('click', deleteMatch);
     els.matchSelect.addEventListener('change', (e) => selectMatch(e.target.value));
 
-    // Debounce name saves
     let nameTimer = null;
     function queueNameSave() {
       clearTimeout(nameTimer);
@@ -357,7 +367,6 @@
     els.team1Input.addEventListener('input', queueNameSave);
     els.team2Input.addEventListener('input', queueNameSave);
 
-    // Score buttons (+/-)
     document.querySelectorAll('.score-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const team = btn.getAttribute('data-team');
@@ -370,6 +379,7 @@
     els.goalForm.addEventListener('submit', addGoal);
 
     // bootstrap
+    await readPrefillFromURL();
     listenToMatchList();
   </script>
 </body>
